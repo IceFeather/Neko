@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Neko</string>
+    <string name="afk">AFK</string>
+    <string name="action_settings">Paramètres</string>
+    <string name="available">Disponible</string>
+    <string name="disconnected">Déconnecté</string>
+    <string name="do_not_disturb">Ne pas déranger</string>
+    <string name="navigation_drawer_close">Fermer la navigation</string>
+    <string name="navigation_drawer_open">Ouvrir la navigation</string>
+    <string name="section_format">Bonjour tout le monde de la section: %1$d</string>
+    <string name="title_activity_login">Connexion</string>
+</resources>
