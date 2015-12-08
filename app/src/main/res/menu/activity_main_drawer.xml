@@ -3,11 +3,9 @@
 
     <group android:checkableBehavior="single">
         <item android:id="@+id/nav_manage" android:icon="@android:drawable/ic_menu_manage"
-            android:title="Settings" />
-        <item android:id="@+id/nav_disconnect" android:icon="@android:drawable/ic_lock_power_off"
-            android:title="Disconnect" />
+            android:title="@string/action_settings" />
         <item android:id="@+id/nav_about" android:icon="@android:drawable/ic_menu_info_details"
-            android:title="About" />
+            android:title="@string/action_about" />
     </group>
 
 </menu>

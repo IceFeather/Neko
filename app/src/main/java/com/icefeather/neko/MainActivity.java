@@ -1,5 +1,6 @@
 package com.icefeather.neko;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -12,11 +13,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.ExpandableListView;
 import android.widget.Spinner;
-import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -47,14 +45,14 @@ public class MainActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
 
 
-        Spinner status_spinner = (Spinner) findViewById(R.id.status_spinner);
-// Create an ArrayAdapter using the string array and a default spinner_item layout
+        /*Spinner status_spinner = (Spinner) findViewById(R.id.status_spinner);
+// Create an ArrayAdapter using the string array and a default status_spinner_item layout
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
-                R.array.status_array, R.layout.spinner_item);
+                R.array.status_array, R.layout.status_spinner_item);
 // Specify the layout to use when the list of choices appears
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-// Apply the adapter to the spinner_item
-        status_spinner.setAdapter(adapter);
+// Apply the adapter to the status_spinner_item
+        status_spinner.setAdapter(adapter);*/
 
 
 
@@ -85,9 +83,9 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        /*if (id == R.id.action_settings) {
             return true;
-        }
+        }*/
 
         return super.onOptionsItemSelected(item);
     }
@@ -99,10 +97,9 @@ public class MainActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_disconnect) {
-            // Handle the camera action
-        } else if (id == R.id.nav_manage) {
-
+        if (id == R.id.nav_manage) {
+            Intent intent = new Intent(this, SettingsActivity.class);
+            startActivity(intent);
         } else if (id == R.id.nav_about) {
 
         }

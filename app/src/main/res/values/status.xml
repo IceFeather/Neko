@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <string-array name="status_array">
-        <item>@string/available</item>
-        <item>@string/afk</item>
-        <item>@string/do_not_disturb</item>
-        <item>@string/disconnected</item>
-    </string-array>
-</resources>
