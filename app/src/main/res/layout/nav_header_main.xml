@@ -31,13 +31,14 @@
             android:layout_height="wrap_content"
             android:paddingTop="@dimen/nav_header_vertical_spacing"
             android:text="Username"
+            android:id="@+id/username"
             android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="IMEI"
-            android:id="@+id/textView" />
+            android:text="EMEI"
+            android:id="@+id/imei" />
 
 
     </LinearLayout>
