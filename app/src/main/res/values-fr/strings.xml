@@ -6,4 +6,7 @@
     <string name="navigation_drawer_open">Ouvrir la navigation</string>
     <string name="action_about">À propos</string>
     <string name="username">Nom d\'utilisateur</string>
+    <string name="wifi_connection">Vous êtes connecté par WiFi</string>
+    <string name="mobile_connection">Vous êtes connecté par réseau mobile</string>
+    <string name="no_connection">Vous n\'êtes connecté à aucuns réseau</string>
 </resources>

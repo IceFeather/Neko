@@ -4,6 +4,8 @@ import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -24,30 +26,41 @@ import android.widget.Spinner;
 import android.telephony.TelephonyManager;
 import android.widget.TextView;
 
+import java.net.Inet4Address;
+import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.net.SocketException;
+import java.net.UnknownHostException;
+import java.util.Enumeration;
+
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
-    public static final int MY_PERMISSIONS_REQUEST_READ_PHONE_STATE = 1;
+    // Whether there is a Wi-Fi connection.
+    private static boolean wifiConnected = false;
+    // Whether there is a mobile connection.
+    private static boolean mobileConnected = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         // Here, thisActivity is the current activity
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE)
+        /*if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE)
                 != PackageManager.PERMISSION_GRANTED) {
 
             ActivityCompat.requestPermissions(this,
                     new String[]{Manifest.permission.READ_PHONE_STATE},
                     MY_PERMISSIONS_REQUEST_READ_PHONE_STATE);
 
-        }
+        }*/
 
         TelephonyManager tm = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
         String emei = tm.getDeviceId();
         Log.d("EMEI", emei);
         //setContentView(R.layout.nav_header_main);
 
+        String myip = getLocalIpAddress();
 
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -74,16 +87,8 @@ public class MainActivity extends AppCompatActivity
         View header = navigationView.getHeaderView(0);
         TextView emeitextview = (TextView)header.findViewById(R.id.imei);
         emeitextview.setText(emei);
-
-
-        /*Spinner status_spinner = (Spinner) findViewById(R.id.status_spinner);
-// Create an ArrayAdapter using the string array and a default status_spinner_item layout
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
-                R.array.status_array, R.layout.status_spinner_item);
-// Specify the layout to use when the list of choices appears
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-// Apply the adapter to the status_spinner_item
-        status_spinner.setAdapter(adapter);*/
+        TextView myiptextview = (TextView)header.findViewById(R.id.myip);
+        myiptextview.setText(myip);
 
     }
 
@@ -136,5 +141,43 @@ public class MainActivity extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+
+    private void checkNetworkConnection() throws UnknownHostException {
+        // BEGIN_INCLUDE(connect)
+        ConnectivityManager connMgr =
+                (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeInfo = connMgr.getActiveNetworkInfo();
+        if (activeInfo != null && activeInfo.isConnected()) {
+            wifiConnected = activeInfo.getType() == ConnectivityManager.TYPE_WIFI;
+            mobileConnected = activeInfo.getType() == ConnectivityManager.TYPE_MOBILE;
+            if(wifiConnected) {
+                Log.d("Net", getString(R.string.wifi_connection));
+            } else if (mobileConnected){
+                Log.d("Net", getString(R.string.mobile_connection));
+            }
+            Log.d("Net", getLocalIpAddress());
+        } else {
+            Log.d("Net", getString(R.string.no_connection));
+        }
+        // END_INCLUDE(connect)
+    }
+
+    public static String getLocalIpAddress() {
+        try {
+            for (Enumeration<NetworkInterface> en = NetworkInterface.getNetworkInterfaces(); en.hasMoreElements();) {
+                NetworkInterface intf = en.nextElement();
+                for (Enumeration<InetAddress> enumIpAddr = intf.getInetAddresses(); enumIpAddr.hasMoreElements();) {
+                    InetAddress inetAddress = enumIpAddr.nextElement();
+                    if (!inetAddress.isLoopbackAddress() && inetAddress instanceof Inet4Address) {
+                        return inetAddress.getHostAddress();
+                    }
+                }
+            }
+        } catch (SocketException ex) {
+            ex.printStackTrace();
+        }
+        return null;
     }
 }
