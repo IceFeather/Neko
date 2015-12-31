@@ -5,23 +5,23 @@ package com.icefeather.neko.database;
  */
 public class Contact {
     
-    private long emei;
+    private long imei;
     private String username;
     private String currentIp;
 
-    public Contact(long emei, String username, String currentIp) {
+    public Contact(long imei, String username, String currentIp) {
         super();
-        this.emei = emei;
+        this.imei = imei;
         this.username = username;
         this.currentIp = currentIp;
     }
 
-    public long getEmei() {
-        return emei;
+    public long getImei() {
+        return imei;
     }
 
-    public void setEmei(long emei) {
-        this.emei = emei;
+    public void setImei(long emei) {
+        this.imei = imei;
     }
 
     public String getUsername() {
