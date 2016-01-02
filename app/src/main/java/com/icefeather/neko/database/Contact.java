@@ -20,7 +20,7 @@ public class Contact {
         return imei;
     }
 
-    public void setImei(long emei) {
+    public void setImei(long imei) {
         this.imei = imei;
     }
 
