@@ -3,10 +3,12 @@ package com.icefeather.neko;
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
@@ -41,6 +43,8 @@ public class MainActivity extends AppCompatActivity
     // Whether there is a mobile connection.
     private static boolean mobileConnected = false;
 
+    public final static String USERNAME = "username";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -56,11 +60,15 @@ public class MainActivity extends AppCompatActivity
         }*/
 
         TelephonyManager tm = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
-        String emei = tm.getDeviceId();
-        Log.d("EMEI", emei);
-        //setContentView(R.layout.nav_header_main);
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
 
+        // user infos
+        String imei = tm.getDeviceId();
         String myip = getLocalIpAddress();
+        String username = preferences.getString(USERNAME, "anonymous");
+
+        Log.d("IMEI", imei);
+        //setContentView(R.layout.nav_header_main);
 
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -85,10 +93,12 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
         View header = navigationView.getHeaderView(0);
-        TextView emeitextview = (TextView)header.findViewById(R.id.imei);
-        emeitextview.setText(emei);
-        TextView myiptextview = (TextView)header.findViewById(R.id.myip);
-        myiptextview.setText(myip);
+        TextView imeiTextView = (TextView)header.findViewById(R.id.imei);
+        imeiTextView.setText(imei);
+        TextView myipTextView = (TextView)header.findViewById(R.id.myip);
+        myipTextView.setText(myip);
+        TextView usernameTextView = (TextView)header.findViewById(R.id.username);
+        usernameTextView.setText(username);
 
     }
 
@@ -118,7 +128,7 @@ public class MainActivity extends AppCompatActivity
 
         //noinspection SimplifiableIfStatement
         /*if (id == R.id.action_settings) {
-            return true;nv
+            return true;
         }*/
 
         return super.onOptionsItemSelected(item);

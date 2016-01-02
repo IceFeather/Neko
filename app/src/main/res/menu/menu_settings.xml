@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context=".SettingsActivity">
     <item
-        android:id="@+id/action_favorite"
+        android:id="@+id/action_save_settings"
         android:title="@string/app_name"
         android:icon="@mipmap/ic_done_white"
         app:showAsAction="ifRoom"/>
