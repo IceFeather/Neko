@@ -1,14 +1,18 @@
 package com.icefeather.neko;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -57,11 +61,17 @@ public class MainActivity extends AppCompatActivity
         // PERMISSION PHONE pour lire IMEI
         /*if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE)
                 != PackageManager.PERMISSION_GRANTED) {
-
-            ActivityCompat.requestPermissions(this,
-                    new String[]{Manifest.permission.READ_PHONE_STATE},
-                    MY_PERMISSIONS_REQUEST_READ_PHONE_STATE);
-
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                    Manifest.permission.READ_PHONE_STATE)) {
+                // Show an expanation to the user *asynchronously* -- don't block
+                // this thread waiting for the user's response! After the user
+                // sees the explanation, try again to request the permission.
+            } else {
+                // No explanation needed, we can request the permission.
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.READ_PHONE_STATE},
+                        R.integer.permission_request_read_phone_state);
+            }
         }*/
 
         TelephonyManager tm = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
@@ -72,9 +82,7 @@ public class MainActivity extends AppCompatActivity
         final String myip = getLocalIpAddress();
         final String username = preferences.getString(USERNAME, "anonymous");
 
-        Contact c = new Contact(Long.valueOf(imei), username, myip);
         cdao = new ContactDAO(this);
-        cdao.insert(c);
         contactList = cdao.getContactList();
 
         //setContentView(R.layout.nav_header_main);
@@ -169,10 +177,8 @@ public class MainActivity extends AppCompatActivity
     }
 
     public void startNFCReading(){
-        Intent intent = new Intent(this, NFCReaderActivity.class);
-        startActivity(intent);
+        startActivity(new Intent(this, NFCReaderActivity.class));
     }
-
 
     private void checkNetworkConnection() throws UnknownHostException {
         // BEGIN_INCLUDE(connect)
@@ -212,4 +218,22 @@ public class MainActivity extends AppCompatActivity
         }
         return null;
     }
+
+    /*
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case R.integer.permission_request_read_phone_state: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                } else {
+                }
+                return;
+            }
+        }
+    }
+    */
+
 }
