@@ -3,7 +3,9 @@ package com.icefeather.neko.database;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.util.Log;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -33,27 +35,34 @@ public class ContactDAO extends DAOBase{
         values.put(COLUMN_IMEI, c.getImei());
         values.put(COLUMN_USERNAME, c.getUsername());
         values.put(COLUMN_CURRENT_IP, c.getCurrentIp());
+        mDB = open();
         mDB.insert(TABLE_NAME, null, values);
+        close();
     }
 
-    public void delete(long emei){
+    public void delete(long imei){
+        mDB = open();
         mDB.delete(
                 TABLE_NAME, COLUMN_IMEI + " = ?",
-                new String[]{String.valueOf(emei)}
+                new String[]{String.valueOf(imei)}
         );
+        close();
     }
 
     public void update(Contact c){
         ContentValues values= new ContentValues();
         values.put(COLUMN_USERNAME, c.getUsername());
         values.put(COLUMN_CURRENT_IP, c.getCurrentIp());
+        mDB = open();
         mDB.update(
                 TABLE_NAME, values, COLUMN_IMEI + " = ?",
                 new String[]{String.valueOf(c.getImei())}
         );
+        close();
     }
 
     public Contact select(long emei){
+        mDB = open();
         Cursor cursor = mDB.rawQuery(
                 "select "+
                         COLUMN_USERNAME+","+
@@ -64,21 +73,27 @@ public class ContactDAO extends DAOBase{
                         COLUMN_IMEI+" = ?;",
                 new String[]{String.valueOf(emei)}
         );
+        close();
         return new Contact(emei,cursor.getString(0),cursor.getString(1));
     }
 
-    public List<Contact> getContactList(){
-        List<Contact> contactList = null;
+    public ArrayList<Contact> getContactList(){
+        ArrayList<Contact> contactList = new ArrayList<Contact>();
+        mDB = open();
         Cursor cursor = mDB.rawQuery(
                 "select "+COLUMN_IMEI+","+COLUMN_USERNAME+","+COLUMN_CURRENT_IP+
                         " from "+TABLE_NAME+" ;",
                 null
         );
-        while (cursor.moveToNext()){
-            contactList.add(
-                    new Contact(cursor.getLong(0),cursor.getString(1),cursor.getString(2))
-            );
+        if(cursor.getCount() > 0){
+            Log.d("CONTACTS_NB", String.valueOf(cursor.getCount()));
+            while (cursor.moveToNext()){
+                contactList.add(
+                        new Contact(cursor.getLong(0),cursor.getString(1),cursor.getString(2))
+                );
+            }
         }
+        close();
         return contactList;
     }
 }

@@ -16,4 +16,7 @@
     <string name="mobile_connection">You are connected with mobile network</string>
     <string name="no_connection">You are not connected to any network</string>
 
+    <string name="title_activity_nfcreader">Neko NFC reading</string>
+    <string name="approach_nfc_device">Approach a mobile with Neko\'s NFC reading active</string>
+
 </resources>

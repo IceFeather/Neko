@@ -6,7 +6,7 @@ import android.database.sqlite.SQLiteDatabase;
 /**
  * Created by IceFeather on 30/12/2015.
  */
-public class DAOBase {
+public abstract class DAOBase {
     protected final static int VERSION = 1;
     protected final static String NOM = "neko.db";
 

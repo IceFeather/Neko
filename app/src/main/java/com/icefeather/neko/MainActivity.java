@@ -24,6 +24,7 @@ import android.telephony.TelephonyManager;
 import android.widget.TextView;
 
 import com.icefeather.neko.database.Contact;
+import com.icefeather.neko.database.ContactDAO;
 
 import java.net.Inet4Address;
 import java.net.InetAddress;
@@ -43,8 +44,11 @@ public class MainActivity extends AppCompatActivity
 
     public final static String USERNAME = "username";
 
-    ContactAdapter contactAdapter;
-    ArrayList<Contact> contactList  = new ArrayList<Contact>();
+    private static ContactAdapter contactAdapter;
+    private ArrayList<Contact> contactList  = new ArrayList<Contact>();
+
+    private ContactDAO cdao;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,13 +68,14 @@ public class MainActivity extends AppCompatActivity
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
 
         // user infos
-        String imei = tm.getDeviceId();
-        String myip = getLocalIpAddress();
-        String username = preferences.getString(USERNAME, "anonymous");
+        final String imei = tm.getDeviceId();
+        final String myip = getLocalIpAddress();
+        final String username = preferences.getString(USERNAME, "anonymous");
 
-        contactList.add(new Contact(0000000000000001L, "anivia", "1.1.1.1"));
-        contactList.add(new Contact(0000000000000002L, "nidalee", "2.2.2.2"));
-
+        Contact c = new Contact(Long.valueOf(imei), username, myip);
+        cdao = new ContactDAO(this);
+        cdao.insert(c);
+        contactList = cdao.getContactList();
 
         //setContentView(R.layout.nav_header_main);
         setContentView(R.layout.activity_main);
@@ -83,13 +88,12 @@ public class MainActivity extends AppCompatActivity
         ListView contactListView = (ListView) findViewById(R.id.contact_list);
         contactListView.setAdapter(contactAdapter);
 
-        // Action lecture NFC
+        // Aller à la lecture NFC
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                startNFCReading();
             }
         });
 
@@ -162,6 +166,11 @@ public class MainActivity extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    public void startNFCReading(){
+        Intent intent = new Intent(this, NFCReaderActivity.class);
+        startActivity(intent);
     }
 
 
