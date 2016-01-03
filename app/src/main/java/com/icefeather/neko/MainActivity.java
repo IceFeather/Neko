@@ -23,6 +23,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.telephony.TelephonyManager;
 import android.widget.TextView;
@@ -95,6 +96,17 @@ public class MainActivity extends AppCompatActivity
         contactAdapter = new ContactAdapter(this,0,contactList);
         ListView contactListView = (ListView) findViewById(R.id.contact_list);
         contactListView.setAdapter(contactAdapter);
+
+        contactListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Contact contact = contactList.get(position);
+                /*Intent intent = new Intent(this, MessageActivity.class);
+                intent.putExtra("contact_imei", contact.getImei()); //Put your id to your next Intent
+                startActivity(intent);
+                finish();*/
+            }
+        });
 
         // Aller à la lecture NFC
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);

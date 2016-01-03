@@ -6,7 +6,6 @@ import android.database.Cursor;
 import android.util.Log;
 
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by IceFeather on 30/12/2015.
@@ -35,14 +34,14 @@ public class ContactDAO extends DAOBase{
         values.put(COLUMN_IMEI, c.getImei());
         values.put(COLUMN_USERNAME, c.getUsername());
         values.put(COLUMN_CURRENT_IP, c.getCurrentIp());
-        mDB = open();
-        mDB.insert(TABLE_NAME, null, values);
+        open();
+        db.insert(TABLE_NAME, null, values);
         close();
     }
 
     public void delete(long imei){
-        mDB = open();
-        mDB.delete(
+        open();
+        db.delete(
                 TABLE_NAME, COLUMN_IMEI + " = ?",
                 new String[]{String.valueOf(imei)}
         );
@@ -53,8 +52,8 @@ public class ContactDAO extends DAOBase{
         ContentValues values= new ContentValues();
         values.put(COLUMN_USERNAME, c.getUsername());
         values.put(COLUMN_CURRENT_IP, c.getCurrentIp());
-        mDB = open();
-        mDB.update(
+        open();
+        db.update(
                 TABLE_NAME, values, COLUMN_IMEI + " = ?",
                 new String[]{String.valueOf(c.getImei())}
         );
@@ -62,8 +61,8 @@ public class ContactDAO extends DAOBase{
     }
 
     public Contact select(long emei){
-        mDB = open();
-        Cursor cursor = mDB.rawQuery(
+        open();
+        Cursor cursor = db.rawQuery(
                 "select "+
                         COLUMN_USERNAME+","+
                         COLUMN_CURRENT_IP+
@@ -79,8 +78,8 @@ public class ContactDAO extends DAOBase{
 
     public ArrayList<Contact> getContactList(){
         ArrayList<Contact> contactList = new ArrayList<Contact>();
-        mDB = open();
-        Cursor cursor = mDB.rawQuery(
+        open();
+        Cursor cursor = db.rawQuery(
                 "select "+COLUMN_IMEI+","+COLUMN_USERNAME+","+COLUMN_CURRENT_IP+
                         " from "+TABLE_NAME+" ;",
                 null

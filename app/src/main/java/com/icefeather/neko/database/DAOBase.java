@@ -10,24 +10,23 @@ public abstract class DAOBase {
     protected final static int VERSION = 1;
     protected final static String NOM = "neko.db";
 
-    protected SQLiteDatabase mDB = null;
+    protected SQLiteDatabase db = null;
     protected DatabaseHandler mHandler = null;
 
     public DAOBase(Context pContext){
         this.mHandler = new DatabaseHandler(pContext, NOM, null, VERSION);
     }
 
-    public SQLiteDatabase open(){
-        mDB = mHandler.getWritableDatabase();
-        return mDB;
+    public void open(){
+        db = mHandler.getWritableDatabase();
     }
 
     public void close(){
-        mDB.close();
+        db.close();
     }
 
     public SQLiteDatabase getDb(){
-        return mDB;
+        return db;
     }
 
 }

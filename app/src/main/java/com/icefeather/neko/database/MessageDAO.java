@@ -42,17 +42,22 @@ public class MessageDAO extends DAOBase{
         values.put(COLUMN_IMEI, m.getImei());
         values.put(COLUMN_DATE, String.valueOf(m.getDate()));
         values.put(COLUMN_MESSAGE, m.getMessage());
-        mDB.insert(TABLE_NAME, null, values);
+        open();
+        db.insert(TABLE_NAME, null, values);
+        close();
     }
 
     public void delete(int id){
-        mDB.delete(TABLE_NAME, COLUMN_ID + " = ?",
+        open();
+        db.delete(TABLE_NAME, COLUMN_ID + " = ?",
                 new String[]{String.valueOf(id)});
+        close();
     }
 
     public List<Message> getMessageListFromImei(long imei){
         List<Message> messageList = null;
-        Cursor cursor = mDB.rawQuery(
+        open();
+        Cursor cursor = db.rawQuery(
                 "SELECT "+
                         COLUMN_ID+" ,"+
                         COLUMN_DATE+" ,"+
@@ -74,6 +79,7 @@ public class MessageDAO extends DAOBase{
                     )
             );
         }
+        close();
         return messageList;
     }
 
