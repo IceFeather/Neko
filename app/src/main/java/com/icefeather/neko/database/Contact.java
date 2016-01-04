@@ -1,9 +1,11 @@
 package com.icefeather.neko.database;
 
+import java.io.Serializable;
+
 /**
  * Created by IceFeather on 15/12/2015.
  */
-public class Contact {
+public class Contact implements Serializable{
     
     private long imei;
     private String username;
@@ -39,4 +41,5 @@ public class Contact {
     public void setCurrentIp(String currentIp) {
         this.currentIp = currentIp;
     }
+
 }

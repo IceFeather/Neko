@@ -13,6 +13,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -31,6 +32,12 @@ import android.widget.TextView;
 import com.icefeather.neko.database.Contact;
 import com.icefeather.neko.database.ContactDAO;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
@@ -48,11 +55,14 @@ public class MainActivity extends AppCompatActivity
     private static boolean mobileConnected = false;
 
     public final static String USERNAME = "username";
+    public final static String MOI = "moi";
 
     private static ContactAdapter contactAdapter;
     private ArrayList<Contact> contactList  = new ArrayList<Contact>();
 
     private ContactDAO cdao;
+
+    public static String moi_serial = "";
 
 
     @Override
@@ -82,6 +92,19 @@ public class MainActivity extends AppCompatActivity
         final String imei = tm.getDeviceId();
         final String myip = getLocalIpAddress();
         final String username = preferences.getString(USERNAME, "anonymous");
+
+        Contact moi = new Contact(Long.valueOf(imei), username, myip);
+
+        SharedPreferences.Editor editor = preferences.edit();
+        try {
+            moi_serial = toString(moi);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        editor.putString(MOI, moi_serial);
+        editor.commit();
+        Intent intent = new Intent(this, MainActivity.class);
+        startActivity(intent);
 
         cdao = new ContactDAO(this);
         contactList = cdao.getContactList();
@@ -247,5 +270,13 @@ public class MainActivity extends AppCompatActivity
         }
     }
     */
+
+    public static String toString( Serializable o ) throws IOException {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        ObjectOutputStream oos = new ObjectOutputStream( baos );
+        oos.writeObject( o );
+        oos.close();
+        return Base64.encodeToString(baos.toByteArray(), Base64.DEFAULT);
+    }
 
 }
