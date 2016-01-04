@@ -14,6 +14,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Base64;
+import android.util.Log;
 import android.view.View;
 
 import com.icefeather.neko.database.Contact;
@@ -24,6 +25,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 import java.util.Locale;
 
@@ -46,6 +48,7 @@ public class NFCReaderActivity extends AppCompatActivity {
         resoudreIntent(getIntent());
 
     }
+
 
     @Override
     protected void onResume() {
@@ -78,6 +81,12 @@ public class NFCReaderActivity extends AppCompatActivity {
                 messages = new NdefMessage[rawMsgs.length];
                 for (int i = 0; i < rawMsgs.length; i++) {
                     messages[i] = (NdefMessage) rawMsgs[i];
+                    NdefRecord record = messages[i].getRecords()[i];
+                    byte[] id = record.getId();
+                    short tnf = record.getTnf();
+                    byte[] type = record.getType();
+                    String message = getTextData(record.getPayload());
+                    Log.d("TAG RECEIVED", message);
                 }
             }
         }
@@ -111,4 +120,17 @@ public class NFCReaderActivity extends AppCompatActivity {
         ois.close();
         return contact;
     }
+
+    String getTextData(byte[] payload) {
+        String s = "";
+        String texteCode = ((payload[0] & 0200) == 0) ? (String) "UTF-8" : (String) "UTF-16";
+        int langageCodeTaille = payload[0] & 0077;
+        try {
+            s = new String(payload, langageCodeTaille + 1, payload.length - langageCodeTaille - 1, texteCode);
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        return s;
+    }
+
 }

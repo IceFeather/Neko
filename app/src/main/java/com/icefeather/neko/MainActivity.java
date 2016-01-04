@@ -44,6 +44,7 @@ import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Enumeration;
 
 public class MainActivity extends AppCompatActivity
@@ -54,6 +55,7 @@ public class MainActivity extends AppCompatActivity
     // Whether there is a mobile connection.
     private static boolean mobileConnected = false;
 
+    public final static String CONTACT_IMEI = "contact_imei";
     public final static String USERNAME = "username";
     public final static String MOI = "moi";
 
@@ -85,6 +87,8 @@ public class MainActivity extends AppCompatActivity
             }
         }*/
 
+        //tests
+
         TelephonyManager tm = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
 
@@ -103,10 +107,10 @@ public class MainActivity extends AppCompatActivity
         }
         editor.putString(MOI, moi_serial);
         editor.commit();
-        Intent intent = new Intent(this, MainActivity.class);
-        startActivity(intent);
 
         cdao = new ContactDAO(this);
+        cdao.insert(new Contact(1L, "bibi", "127.0.0.1"));
+
         contactList = cdao.getContactList();
 
         //setContentView(R.layout.nav_header_main);
@@ -124,10 +128,10 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Contact contact = contactList.get(position);
-                /*Intent intent = new Intent(this, MessageActivity.class);
-                intent.putExtra("contact_imei", contact.getImei()); //Put your id to your next Intent
+                Intent intent = getChatIntent();
+                intent.putExtra(CONTACT_IMEI, contact.getImei()); //Put your id to your next Intent
                 startActivity(intent);
-                finish();*/
+                finish();
             }
         });
 
@@ -277,6 +281,10 @@ public class MainActivity extends AppCompatActivity
         oos.writeObject( o );
         oos.close();
         return Base64.encodeToString(baos.toByteArray(), Base64.DEFAULT);
+    }
+
+    public Intent getChatIntent(){
+        return new Intent(this, ChatActivity.class);
     }
 
 }

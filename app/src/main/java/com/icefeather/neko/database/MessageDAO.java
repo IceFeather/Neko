@@ -4,7 +4,8 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 
-import java.sql.Date;
+import java.util.Date;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -15,6 +16,7 @@ public class MessageDAO extends DAOBase{
     public static final String COLUMN_ID = "id";
     public static final String COLUMN_IMEI = "imei";
     public static final String COLUMN_DATE = "date";
+    public static final String COLUMN_DIRECTION = "direction";
     public static final String COLUMN_MESSAGE = "message";
     private ContactDAO contactDAO;
 
@@ -25,7 +27,8 @@ public class MessageDAO extends DAOBase{
                     COLUMN_IMEI+" LONG " +
                         "REFERENCES "+ContactDAO.TABLE_NAME+"("+ContactDAO.COLUMN_IMEI+") "+
                         "ON DELETE CASCADE, "+
-                    COLUMN_DATE+" TEXT, "+
+                    COLUMN_DATE+" LONG, "+
+                    COLUMN_DIRECTION+" INTEGER, "+
                     COLUMN_MESSAGE+" TEXT" +
             ");";
 
@@ -40,7 +43,8 @@ public class MessageDAO extends DAOBase{
     public void insert(Message m){
         ContentValues values = new ContentValues();
         values.put(COLUMN_IMEI, m.getImei());
-        values.put(COLUMN_DATE, String.valueOf(m.getDate()));
+        values.put(COLUMN_DATE, m.getDate().getTime());
+        values.put(COLUMN_DIRECTION, m.getDirection());
         values.put(COLUMN_MESSAGE, m.getMessage());
         open();
         db.insert(TABLE_NAME, null, values);
@@ -54,13 +58,14 @@ public class MessageDAO extends DAOBase{
         close();
     }
 
-    public List<Message> getMessageListFromImei(long imei){
-        List<Message> messageList = null;
+    public ArrayList<Message> getMessageListFromImei(long imei){
+        ArrayList<Message> messageList = new ArrayList<Message>();
         open();
         Cursor cursor = db.rawQuery(
                 "SELECT "+
                         COLUMN_ID+" ,"+
                         COLUMN_DATE+" ,"+
+                        COLUMN_DIRECTION+" ,"+
                         COLUMN_MESSAGE+
                 " FROM "+
                         TABLE_NAME+
@@ -74,8 +79,9 @@ public class MessageDAO extends DAOBase{
                     new Message(
                             cursor.getInt(0),
                             imei,
-                            Date.valueOf(cursor.getString(1)),
-                            cursor.getString(2)
+                            new Date(cursor.getLong(1)*1000),
+                            cursor.getInt(2),
+                            cursor.getString(3)
                     )
             );
         }

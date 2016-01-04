@@ -9,13 +9,15 @@ public class Message {
     private int id;
     private long imei;
     private Date date;
+    private int direction; // 1 for received; 2 for sent;
     private String message;
 
-    public Message(int id, long imei, Date date, String message){
+    public Message(int id, long imei, Date date, int direction, String message){
         super();
         this.id = id;
         this.imei = imei;
         this.date = date;
+        this.direction = direction;
         this.message = message;
     }
 
@@ -30,6 +32,10 @@ public class Message {
     public void setDate(Date date){ this.date = date; }
 
     public Date getDate(){ return this.date; }
+
+    public void setDirection(int direction){ this.direction = direction; }
+
+    public int getDirection(){ return this.direction; }
 
     public void setMessage(String message){ this.message = message; }
 

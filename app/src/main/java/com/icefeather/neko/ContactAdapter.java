@@ -44,7 +44,7 @@ public class ContactAdapter extends ArrayAdapter<Contact>{
         final ViewHolder holder;
         try {
             if (convertView == null) {
-                vi = layoutInflater.inflate(R.layout.active_conversation_list, null);
+                vi = layoutInflater.inflate(R.layout.contact_list, null);
                 holder = new ViewHolder();
 
                 holder.usernameTextView = (TextView) vi.findViewById(R.id.username);
