@@ -60,7 +60,7 @@ public class ContactDAO extends DAOBase{
         close();
     }
 
-    public Contact select(long emei){
+    public Contact select(long imei){
         open();
         Cursor cursor = db.rawQuery(
                 "select "+
@@ -70,10 +70,12 @@ public class ContactDAO extends DAOBase{
                         TABLE_NAME+
                 " where " +
                         COLUMN_IMEI+" = ?;",
-                new String[]{String.valueOf(emei)}
+                new String[]{String.valueOf(imei)}
         );
+        cursor.moveToFirst();
+        Contact contact = new Contact(imei,cursor.getString(0),cursor.getString(1));
         close();
-        return new Contact(emei,cursor.getString(0),cursor.getString(1));
+        return contact;
     }
 
     public ArrayList<Contact> getContactList(){

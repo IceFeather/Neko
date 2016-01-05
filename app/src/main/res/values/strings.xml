@@ -18,6 +18,7 @@
 
     <string name="title_activity_nfcreader">Neko NFC reading</string>
     <string name="approach_nfc_device">Approach a mobile with Neko\'s NFC reading active</string>
+    <string name="contact_added">A new contact has been added !</string>
 
     <string name="title_activity_chat">Neko</string>
     <string name="message">enter your message...</string>

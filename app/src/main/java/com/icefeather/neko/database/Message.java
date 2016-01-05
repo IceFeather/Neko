@@ -1,15 +1,16 @@
 package com.icefeather.neko.database;
 
+import java.io.Serializable;
 import java.util.Date;
 
 /**
  * Created by IceFeather on 31/12/2015.
  */
-public class Message {
+public class Message implements Serializable{
     private int id;
     private long imei;
     private Date date;
-    private int direction; // 1 for received; 2 for sent;
+    private int direction; // 1 for sent; 2 for received;
     private String message;
 
     public Message(int id, long imei, Date date, int direction, String message){

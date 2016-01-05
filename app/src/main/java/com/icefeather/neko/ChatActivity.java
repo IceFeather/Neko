@@ -8,57 +8,91 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
 
+import com.icefeather.neko.database.Contact;
+import com.icefeather.neko.database.ContactDAO;
 import com.icefeather.neko.database.Message;
 import com.icefeather.neko.database.MessageDAO;
+import com.icefeather.neko.service.ChatClient;
 
+import java.io.IOException;
+import java.io.ObjectOutputStream;
+import java.net.InetAddress;
+import java.net.Socket;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Date;
 
 public class ChatActivity extends AppCompatActivity {
 
+    private ContactDAO cdao;
+    private Contact contact;
     private MessageDAO mdao;
     private ArrayList<Message> messageArrayList = new ArrayList<Message>();
     private static MessageAdapter messageAdapter;
+    private static final Integer PORT = 9999;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
         Intent intent = getIntent();
-        Long imei = intent.getLongExtra(MainActivity.CONTACT_IMEI, 0L);
+        final Long imei = intent.getLongExtra(MainActivity.CONTACT_IMEI, 0L);
         Log.d("CHAT_IMEI", String.valueOf(imei));
+
+
+        cdao = new ContactDAO(this);
+        contact = cdao.select(imei);
+
+        mdao = new MessageDAO(this);
+
+        messageArrayList = mdao.getMessageListFromImei(imei);
+        messageAdapter = new MessageAdapter(this, 0, mdao.getMessageListFromImei(contact.getImei()));
+        ListView messageListView = (ListView) findViewById(R.id.message_list);
+        messageListView.setAdapter(messageAdapter);
+
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
+        final EditText messageEditText = (EditText) findViewById(R.id.message_edit);
         ImageButton buttonSend = (ImageButton) findViewById(R.id.button_send);
+
         buttonSend.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                sendMessage();
+                String messageText = messageEditText.getText().toString();
+                if (messageText != "") {
+                    Message message = new Message(
+                            0, imei, new Date(), 1, messageText
+                    );
+                    try {
+                        sendMessage(message, contact);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
             }
         });
 
-        mdao = new MessageDAO(this);
-        mdao.insert(new Message(0, 1L, new Date(), 1, "envoi"));
-        mdao.insert(new Message(0, 1L, new Date(), 2, "reception"));
-
-        messageArrayList = mdao.getMessageListFromImei(imei);
-
-        messageAdapter = new MessageAdapter(this, 0, messageArrayList);
-
-        ListView contactListView = (ListView) findViewById(R.id.message_list);
-        contactListView.setAdapter(messageAdapter);
-
-
     }
 
-    protected void sendMessage(){
-
+    protected void sendMessage(Message message, Contact contact) throws IOException {
+        Log.d("SEND_MESSAGE_TO", contact.getCurrentIp()+":"+PORT);
+        ChatClient cc = new ChatClient(contact, message);
+        cc.execute();
+        mdao.insert(message);
+        messageArrayList = mdao.getMessageListFromImei(contact.getImei());
+        runOnUiThread(new Runnable() {
+            public void run() {
+                messageAdapter.notifyDataSetChanged();
+            }
+        });
     }
 
 }
