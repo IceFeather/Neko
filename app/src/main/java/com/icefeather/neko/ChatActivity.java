@@ -1,5 +1,6 @@
 package com.icefeather.neko;
 
+import android.app.LauncherActivity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -11,6 +12,7 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import com.icefeather.neko.database.Contact;
 import com.icefeather.neko.database.ContactDAO;
@@ -28,11 +30,13 @@ import java.util.Date;
 
 public class ChatActivity extends AppCompatActivity {
 
-    private ContactDAO cdao;
-    private Contact contact;
-    private MessageDAO mdao;
-    private ArrayList<Message> messageArrayList = new ArrayList<Message>();
-    private static MessageAdapter messageAdapter;
+    private static ContactDAO cdao;
+    private static MessageDAO mdao;
+    private static Contact contact;
+    private static ArrayList<Message> messageArrayList = new ArrayList<Message>();
+    private LauncherActivity.ListItem messageListItem = new LauncherActivity.ListItem();
+    public static MessageAdapter messageAdapter;
+    private ListView messageListView;
     private static final Integer PORT = 9999;
 
     @Override
@@ -49,9 +53,15 @@ public class ChatActivity extends AppCompatActivity {
 
         mdao = new MessageDAO(this);
 
+        TextView contactUsernameTextView = (TextView) findViewById(R.id.contact_username);
+        TextView contactIpTextView = (TextView) findViewById(R.id.contact_ip);
+
+        contactUsernameTextView.setText(contact.getUsername());
+        contactIpTextView.setText(contact.getCurrentIp());
+
         messageArrayList = mdao.getMessageListFromImei(imei);
         messageAdapter = new MessageAdapter(this, 0, mdao.getMessageListFromImei(contact.getImei()));
-        ListView messageListView = (ListView) findViewById(R.id.message_list);
+        messageListView = (ListView) findViewById(R.id.message_list);
         messageListView.setAdapter(messageAdapter);
 
 
@@ -83,16 +93,18 @@ public class ChatActivity extends AppCompatActivity {
     }
 
     protected void sendMessage(Message message, Contact contact) throws IOException {
-        Log.d("SEND_MESSAGE_TO", contact.getCurrentIp()+":"+PORT);
+        Log.d("SEND_MESSAGE_TO", contact.getCurrentIp() + ":" + PORT);
         ChatClient cc = new ChatClient(contact, message);
         cc.execute();
         mdao.insert(message);
         messageArrayList = mdao.getMessageListFromImei(contact.getImei());
-        runOnUiThread(new Runnable() {
-            public void run() {
-                messageAdapter.notifyDataSetChanged();
-            }
-        });
+        updateMessageList();
+    }
+
+    public static void updateMessageList(){
+        messageAdapter.clear();
+        messageAdapter.addAll(mdao.getMessageListFromImei(contact.getImei()));
+        messageAdapter.notifyDataSetChanged();
     }
 
 }

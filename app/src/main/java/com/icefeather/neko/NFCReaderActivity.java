@@ -51,7 +51,7 @@ public class NFCReaderActivity extends AppCompatActivity {
 
         resoudreIntent(getIntent());
 
-        /* SIMU RECEPTION TAG */
+        /* SIMU RECEPTION TAG
         simulation();
         /**/
     }

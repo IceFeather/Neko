@@ -156,4 +156,6 @@ public class ChatServer extends Service {
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         mNotificationManager.notify(1, mBuilder.build());
     }
+
+
 }

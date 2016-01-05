@@ -119,14 +119,13 @@ public class MainActivity extends AppCompatActivity
         ListView contactListView = (ListView) findViewById(R.id.contact_list);
         contactListView.setAdapter(contactAdapter);
 
+        final Intent chatintent = new Intent(this, ChatActivity.class);
         contactListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Contact contact = contactList.get(position);
-                Intent intent = getChatIntent();
-                intent.putExtra(CONTACT_IMEI, contact.getImei());
-                startActivity(intent);
-                finish();
+                chatintent.putExtra(CONTACT_IMEI, contact.getImei());
+                startActivity(chatintent);
             }
         });
 
@@ -290,8 +289,5 @@ public class MainActivity extends AppCompatActivity
         return object;
     }
 
-    public Intent getChatIntent(){
-        return new Intent(this, ChatActivity.class);
-    }
 
 }
