@@ -37,6 +37,7 @@ public class ChatActivity extends AppCompatActivity {
     private LauncherActivity.ListItem messageListItem = new LauncherActivity.ListItem();
     public static MessageAdapter messageAdapter;
     private ListView messageListView;
+    private EditText messageEditText;
     private static final Integer PORT = 9999;
 
     @Override
@@ -70,7 +71,7 @@ public class ChatActivity extends AppCompatActivity {
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        final EditText messageEditText = (EditText) findViewById(R.id.message_edit);
+        messageEditText = (EditText) findViewById(R.id.message_edit);
         ImageButton buttonSend = (ImageButton) findViewById(R.id.button_send);
 
         buttonSend.setOnClickListener(new View.OnClickListener() {
@@ -99,6 +100,7 @@ public class ChatActivity extends AppCompatActivity {
         mdao.insert(message);
         messageArrayList = mdao.getMessageListFromImei(contact.getImei());
         updateMessageList();
+        messageEditText.setText("");
     }
 
     public static void updateMessageList(){

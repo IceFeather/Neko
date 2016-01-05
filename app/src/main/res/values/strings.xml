@@ -17,6 +17,7 @@
     <string name="no_connection">You are not connected to any network</string>
 
     <string name="title_activity_nfcreader">Neko NFC reading</string>
+    <string name="nfc_not_available">NFC is not available or active on your device</string>
     <string name="approach_nfc_device">Approach a mobile with Neko\'s NFC reading active</string>
     <string name="contact_added">A new contact has been added !</string>
 

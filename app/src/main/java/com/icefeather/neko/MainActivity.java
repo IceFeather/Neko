@@ -106,6 +106,7 @@ public class MainActivity extends AppCompatActivity
         editor.commit();
 
         cdao = new ContactDAO(this);
+
         contactList = cdao.getContactList();
 
         //setContentView(R.layout.nav_header_main);

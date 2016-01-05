@@ -1,41 +1,35 @@
 package com.icefeather.neko;
 
-import android.app.PendingIntent;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.nfc.NdefMessage;
 import android.nfc.NdefRecord;
 import android.nfc.NfcAdapter;
+import android.nfc.NfcAdapter.CreateNdefMessageCallback;
+import android.nfc.NfcEvent;
 import android.os.Bundle;
 import android.os.Parcelable;
-import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Base64;
-import android.util.Log;
-import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.icefeather.neko.database.Contact;
 import com.icefeather.neko.database.ContactDAO;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.Serializable;
-import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
-import java.util.Locale;
 
-public class NFCReaderActivity extends AppCompatActivity {
+public class NFCReaderActivity extends AppCompatActivity implements CreateNdefMessageCallback {
 
     private NfcAdapter nfcAdapter;
     private ContactDAO cdao;
     private int SIMU = 0;
+
+    private TextView nfcText;
+
+    public static final String MIME_TEXT_PLAIN = "text/plain";
+    private final static String TAG = "NFC";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,116 +41,87 @@ public class NFCReaderActivity extends AppCompatActivity {
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
+        TextView textView = (TextView) findViewById(R.id.nfc_text);
+        // Check for available NFC Adapter
         nfcAdapter = NfcAdapter.getDefaultAdapter(this);
+        if (nfcAdapter == null) {
+            Toast.makeText(this, "NFC is not available", Toast.LENGTH_LONG).show();
+            finish();
+            return;
+        }
+        // Register callback
+        nfcAdapter.setNdefPushMessageCallback(this, this);
 
-        resoudreIntent(getIntent());
-
-        /* SIMU RECEPTION TAG
-        simulation();
-        /**/
     }
 
+    @Override
+    public NdefMessage createNdefMessage(NfcEvent event) {
+        String text = (MainActivity.moi_serial);
+        NdefMessage msg = new NdefMessage(
+                new NdefRecord[] { createMimeRecord(
+                        "application/com.icefeather.neko", text.getBytes())
+                        /**
+                         * The Android Application Record (AAR) is commented out. When a device
+                         * receives a push with an AAR in it, the application specified in the AAR
+                         * is guaranteed to run. The AAR overrides the tag dispatch system.
+                         * You can add it back in to guarantee that this
+                         * activity starts when receiving a beamed message. For now, this code
+                         * uses the tag dispatch system.
+                         */
+                        //,NdefRecord.createApplicationRecord("com.example.android.beam")
+                });
+        return msg;
+    }
 
     @Override
-    protected void onResume() {
+    public void onResume() {
         super.onResume();
-        PendingIntent pendingIntent = PendingIntent.getActivity(
-                this, 0, new Intent(this, this.getClass()).addFlags(
-                        Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
-        nfcAdapter.enableForegroundDispatch(this, pendingIntent, null, null);
-        NdefRecord record = creerRecord(MainActivity.moi_serial);
-        NdefMessage message = creerMessage(record);
-        nfcAdapter.setNdefPushMessage(message, this);
+        // Check to see that the Activity started due to an Android Beam
+        if (NfcAdapter.ACTION_NDEF_DISCOVERED.equals(getIntent().getAction())) {
+            processIntent(getIntent());
+        }
     }
 
     @Override
-    protected void onPause()
-    {
-        super.onPause();
-        //nfcAdapter.disableForegroundNdefPush(this);
-        //nfcAdapter.setNdefPushMessage(ndefMessage, this);
+    public void onNewIntent(Intent intent) {
+        // onResume gets called after this to handle the intent
+        setIntent(intent);
     }
 
-
-
-    protected void resoudreIntent(Intent intent){
-        String action = intent.getAction();
-        if (NfcAdapter.ACTION_TAG_DISCOVERED.equals(action)){
-            Parcelable[] rawMsgs = intent.getParcelableArrayExtra(NfcAdapter.EXTRA_NDEF_MESSAGES);
-            NdefMessage[] messages;
-            if (rawMsgs != null) {
-                messages = new NdefMessage[rawMsgs.length];
-                for (int i = 0; i < rawMsgs.length; i++) {
-                    messages[i] = (NdefMessage) rawMsgs[i];
-                    NdefRecord record = messages[i].getRecords()[i];
-                    byte[] id = record.getId();
-                    short tnf = record.getTnf();
-                    byte[] type = record.getType();
-                    String message = getTextData(record.getPayload());
-                    Log.d("TAG RECEIVED", message);
-                    parseNFCmessage(message);
-                }
-            }
-        }
-    }
-
-    public static NdefRecord creerRecord(String message) {
-        byte[] langBytes = Locale.ENGLISH.getLanguage().getBytes(Charset.forName("US-ASCII"));
-        byte[] textBytes = message.getBytes(Charset.forName("UTF-8"));
-        char status = (char) (langBytes.length);
-        byte[] data = new byte[1 + langBytes.length + textBytes.length];
-        data[0] = (byte) status;
-        System.arraycopy(langBytes, 0, data, 1, langBytes.length);
-        System.arraycopy(textBytes, 0, data, 1 + langBytes.length, textBytes.length);
-        return new NdefRecord(NdefRecord.TNF_WELL_KNOWN, NdefRecord.RTD_TEXT, new byte[0], data);
-    }
-
-    public static NdefMessage creerMessage(NdefRecord record)
-    {
-        NdefRecord[] records = new NdefRecord[1];
-        records[0] = record;
-        NdefMessage message = new NdefMessage(records);
-        return message;
-    }
-
-    String getTextData(byte[] payload) {
-        String s = "";
-        String texteCode = ((payload[0] & 0200) == 0) ? (String) "UTF-8" : (String) "UTF-16";
-        int langageCodeTaille = payload[0] & 0077;
+    /**
+     * Parses the NDEF Message from the intent and prints to the TextView
+     */
+    void processIntent(Intent intent) {
+        nfcText = (TextView) findViewById(R.id.nfc_text);
+        Parcelable[] rawMsgs = intent.getParcelableArrayExtra(
+                NfcAdapter.EXTRA_NDEF_MESSAGES);
+        // only one message sent during the beam
+        NdefMessage msg = (NdefMessage) rawMsgs[0];
+        // record 0 contains the MIME type, record 1 is the AAR, if present
+        String messageIn = new String(msg.getRecords()[0].getPayload());
+        Contact newContact = null;
         try {
-            s = new String(payload, langageCodeTaille + 1, payload.length - langageCodeTaille - 1, texteCode);
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
-        return s;
-    }
-
-    public void parseNFCmessage(String message){
-        try{
-            Contact NFCContact = (Contact) MainActivity.fromString(message);
+            newContact = (Contact) MainActivity.fromString(messageIn);
+            nfcText.setText("New contact found : "+newContact.getUsername());
             cdao = new ContactDAO(this);
-            cdao.insert(NFCContact);
-            Toast toast = Toast.makeText(getApplicationContext(), R.string.contact_added, Toast.LENGTH_SHORT);
-            toast.show();
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
+            cdao.insert(newContact);
         } catch (IOException e) {
             e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
         }
-        Intent intent = new Intent(this, MainActivity.class);
-        startActivity(intent);
-        finish();
     }
 
-    public void simulation(){
-        if(SIMU == 0) {
-            SIMU = 1;
-            final Intent intent = new Intent(NfcAdapter.ACTION_TAG_DISCOVERED);
-            NdefMessage[] messages = new NdefMessage[1];
-            messages[0] = creerMessage(creerRecord(MainActivity.moi_serial));
-            intent.putExtra(NfcAdapter.EXTRA_NDEF_MESSAGES, messages);
-            startActivity(intent);
-        }
+    /**
+     * Creates a custom MIME type encapsulated in an NDEF record
+     *
+     * @param mimeType
+     */
+    public NdefRecord createMimeRecord(String mimeType, byte[] payload) {
+        byte[] mimeBytes = mimeType.getBytes(Charset.forName("US-ASCII"));
+        NdefRecord mimeRecord = new NdefRecord(
+                NdefRecord.TNF_MIME_MEDIA, mimeBytes, new byte[0], payload);
+        return mimeRecord;
     }
 
 }

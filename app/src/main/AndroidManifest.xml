@@ -48,15 +48,15 @@
             android:name=".NFCReaderActivity"
             android:label="@string/title_activity_nfcreader"
             android:parentActivityName=".MainActivity"
+            android:launchMode="singleTop"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.icefeather.neko.MainActivity" />
-
             <intent-filter>
-                <action android:name="android.nfc.action.TAG_DISCOVERED" />
-
+                <action android:name="android.nfc.action.NDEF_DISCOVERED" />
                 <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="application/com.icefeather.neko" />
             </intent-filter>
         </activity>
         <activity

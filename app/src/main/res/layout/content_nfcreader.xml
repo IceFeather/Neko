@@ -13,7 +13,7 @@
     tools:showIn="@layout/activity_nfcreader">
 
     <TextView
-        android:id="@+id/instruction"
+        android:id="@+id/nfc_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textAlignment="center"
@@ -23,7 +23,7 @@
         android:id="@+id/nfc_icon"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/instruction"
+        android:layout_below="@id/nfc_text"
         android:src="@drawable/ic_nfc"/>
 
 
