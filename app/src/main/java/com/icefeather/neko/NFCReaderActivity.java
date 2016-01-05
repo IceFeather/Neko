@@ -35,6 +35,7 @@ public class NFCReaderActivity extends AppCompatActivity {
 
     private NfcAdapter nfcAdapter;
     private ContactDAO cdao;
+    private int SIMU = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,12 +51,8 @@ public class NFCReaderActivity extends AppCompatActivity {
 
         resoudreIntent(getIntent());
 
-        /* SIMU RECEPTION TAG
-        final Intent intent = new Intent(NfcAdapter.ACTION_TAG_DISCOVERED);
-        NdefMessage[] messages = new NdefMessage[1];
-        messages[0] = creerMessage(creerRecord(MainActivity.moi_serial));
-        intent.putExtra(NfcAdapter.EXTRA_NDEF_MESSAGES, messages);
-        startActivity(intent);
+        /* SIMU RECEPTION TAG */
+        simulation();
         /**/
     }
 
@@ -149,6 +146,17 @@ public class NFCReaderActivity extends AppCompatActivity {
         Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
         finish();
+    }
+
+    public void simulation(){
+        if(SIMU == 0) {
+            SIMU = 1;
+            final Intent intent = new Intent(NfcAdapter.ACTION_TAG_DISCOVERED);
+            NdefMessage[] messages = new NdefMessage[1];
+            messages[0] = creerMessage(creerRecord(MainActivity.moi_serial));
+            intent.putExtra(NfcAdapter.EXTRA_NDEF_MESSAGES, messages);
+            startActivity(intent);
+        }
     }
 
 }
