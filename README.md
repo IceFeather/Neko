@@ -12,7 +12,6 @@ It works essentially in peer-to-peer.
 Neko uses the NFC technology as a way to create contacts.
 
 The informations transiting are :
-
 * The username
 * The device IMEI
 * The device IP address
@@ -32,7 +31,6 @@ Elle fonctionne essentiellement en peer-to-peer.
 Neko utilise la technologie NFC comme moyen de création de contacts. 
 
 Les informations transmises en NFC sont :
-
 * Le nom d’utilisateur du contact
 * L’IMEI du téléphone
 * Son adresse IP sur le réseau
