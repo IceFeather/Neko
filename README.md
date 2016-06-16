@@ -15,7 +15,7 @@ The informations transiting are :
 * The username
 * The device IMEI
 * The device IP address
-* 
+
 After beeing identified, the two devices will each on their side create the discussion channel.
 
 Then the discussion can begin.
@@ -34,7 +34,7 @@ Les informations transmises en NFC sont :
 * Le nom d’utilisateur du contact
 * L’IMEI du téléphone
 * Son adresse IP sur le réseau
-* 
+
 Après avoir été identifiés, les deux appareils vont chacun de leur côté créer la discussion. 
 
 Le dialogue peut alors commencer.
