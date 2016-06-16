@@ -1,7 +1,7 @@
 # Neko
 UTBM LP50 Project
 
-:en: :us:
+:uk: :us:
 ###### Description
 Neko is an Android application of instant chatting  (only for now, before the implementation of other features).
 It allows two users to create a conversation channel without having to transmit personal data or register on a server.
